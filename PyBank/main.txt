@@ -1,0 +1,80 @@
+# -*- coding: utf-8 -*-
+"""Student Do: Sales Analysis.
+
+This script will use the Pathlib library to set the file path,
+use the csv library to read in the file, and iterate over each
+row of the file to calculate customer sales averages.
+"""
+
+# Import the pathlib and csv library
+from pathlib import Path
+import csv
+
+# Set the file path
+csvpath = Path('../Resources/budget_data.csv')
+
+# Initialize list of records
+records = []
+total_months = 0
+total_profits = 0
+minimum_profit = 0
+maximum_profit = 0
+minimum_date = 0
+maximum_date = 0
+previous_monthly_profit = None
+monthly_profit_change = 0
+total_monthly_profit_change = 0
+
+# Open the csv file
+with open(csvpath, 'r') as csvfile:
+
+    # The header
+    csvreader = csv.reader(csvfile, delimiter=',')
+    csv_header = next(csvreader)
+    
+    # Read each row of data after header
+    for row in csvreader:
+    
+    # Count number of months
+        total_months += 1
+        
+    # Calculate net total of profits/losses
+        monthly_profits_losses = int(row[1])
+        Date = row[0]
+        total_profits += monthly_profits_losses
+        
+    # Calculate change in monthly profits
+        if previous_monthly_profit is None:
+            previous_monthly_profit = monthly_profits_losses
+        else:
+            monthly_profit_change = monthly_profits_losses - previous_monthly_profit
+            previous_monthly_profit = monthly_profits_losses
+        total_monthly_profit_change += monthly_profit_change
+    
+    # The greatest increase in profits (maximum profit), the greatest decrease in losses (minimum profit)
+        if minimum_profit == 0:
+            minimum_profit = monthly_profit_change
+            minimum_date = Date
+        elif monthly_profit_change < minimum_profit:
+            minimum_profit = monthly_profit_change
+            minimum_date = Date
+        elif monthly_profit_change > maximum_profit:
+            maximum_profit = monthly_profit_change
+            maximum_date = Date
+            
+# Find average profits/losses
+    averagePnL = round(total_profits/total_months, 2)
+
+# Find average monthly profit change
+    average_monthly_profit_change = round(total_monthly_profit_change / (total_months - 1), 2)   
+            
+# Print findings    
+print("Financial Analysis")
+print("----------------------------")
+print(f"Total Months: {total_months}")
+print(f"Net Total: ${total_profits}")
+print(f"Average Changes: ${average_monthly_profit_change}")
+print(f"Greatest Increase in Profits: {maximum_date} (${maximum_profit})")
+print(f"Greatest Decrease in Losses: {minimum_date} (${minimum_profit})")
+
+    
